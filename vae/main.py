@@ -93,12 +93,27 @@ def main():
     params = list(model.parameters())
     optimizer = torch.optim.Adam(params, lr=LR)
 
+    best_val_loss = 1e19
     for i in range(EPOCHS):
         print(f"Train epoch: {i+1}/{EPOCHS}")
         train_results = train_epoch(model, train_loader, optimizer, device)
         print(train_results)
         val_results = val_epoch(model, val_loader, optimizer, device)
         print(val_results)
+
+        val_loss = val_results["loss"]
+
+        if val_loss < best_val_loss:
+            best_val_loss = val_loss
+            torch.save(
+                {
+                    "epoch": i,
+                    "model_state_dict": model.state_dict(),
+                    "optimizer_state_dict": optimizer.state_dict()
+                },
+                f"checkpoints/vae-epoch-{i}.pt"
+            )
+            print("Checkpoint was saved")
 
     z = torch.randn(16, 512)
     z = z.to(device)
