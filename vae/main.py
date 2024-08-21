@@ -79,6 +79,17 @@ def val_epoch(model, val_loader, optimizer, device):
     }
 
 
+def sample_images(model, epoch, device):
+    z = torch.randn(16, 512)
+    z = z.to(device)
+    output = model.sample(z)
+    output = 0.5 * (output + 1) * 255
+    output = output.to(torch.uint8).cpu()
+    for i, img_tensor in enumerate(output):
+        img = transforms.ToPILImage()(img_tensor)
+        img.save(f'checkpoints/vae-results-epoch-{epoch}-output-image-{i}.png')
+
+
 def main():
     if torch.cuda.is_available():
         device = "cuda"
@@ -115,14 +126,7 @@ def main():
             )
             print("Checkpoint was saved")
 
-    z = torch.randn(16, 512)
-    z = z.to(device)
-    output = model.sample(z)
-    output = 0.5 * (output + 1) * 255
-    output = output.to(torch.uint8).cpu()
-    for i, img_tensor in enumerate(output):
-        img = transforms.ToPILImage()(img_tensor)
-        img.save(f'output_image_{i}.png')
+        sample_images(model, i, device)
 
 
 if __name__ == "__main__":
