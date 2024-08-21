@@ -101,7 +101,7 @@ def main():
         val_results = val_epoch(model, val_loader, optimizer, device)
         print(val_results)
 
-        val_loss = val_results["loss"]
+        val_loss = val_results["val_loss"]
 
         if val_loss < best_val_loss:
             best_val_loss = val_loss
