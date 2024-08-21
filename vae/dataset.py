@@ -3,7 +3,7 @@ from torchvision import transforms as T
 from torch.utils.data import DataLoader
 
 
-train_transforms = T.Compose([
+train_cifar10_transforms = T.Compose([
     T.RandomHorizontalFlip(),
     T.Resize((128, 128)),
     T.ToTensor(),
@@ -13,7 +13,7 @@ train_transforms = T.Compose([
     )
 ])
 
-test_transform = T.Compose([
+test_cifar10_transform = T.Compose([
     T.Resize((128, 128)),
     T.ToTensor(),
     T.Normalize(
@@ -23,24 +23,61 @@ test_transform = T.Compose([
 ])
 
 
+train_mnist_transforms = T.Compose([
+    T.RandomHorizontalFlip(),
+    T.Resize((128, 128)),
+    T.ToTensor(),
+    T.Normalize((0.1307,), (0.3081,))
+])
+
+test_mnist_transform = T.Compose([
+    T.Resize((128, 128)),
+    T.ToTensor(),
+    T.Normalize((0.1307,), (0.3081,))
+])
+
+
 def get_cifar10_datasets():
     trainset = datasets.CIFAR10(
         root='./data',
         train=True,
         download=True,
-        transform=train_transforms
+        transform=train_cifar10_transforms
     )
     valset = datasets.CIFAR10(
         root='./data',
         train=False,
         download=True,
-        transform=test_transform
+        transform=test_cifar10_transform
     )
     return trainset, valset
 
 
 def get_cifar10_dataloaders(batch_size):
     trainset, valset = get_cifar10_datasets()
+    train_loader = DataLoader(dataset=trainset, batch_size=batch_size)
+    val_loader = DataLoader(dataset=valset, batch_size=batch_size)
+    return train_loader, val_loader
+
+
+def get_mnist_datasets():
+    trainset = datasets.MNIST(
+        root='./data',
+        train=True,
+        download=True,
+        transform=train_mnist_transforms
+    )
+    valset = datasets.MNIST(
+        root='./data',
+        train=False,
+        download=True,
+        transform=test_mnist_transform
+    )
+    return trainset, valset
+
+
+def get_mnist_dataloaders(batch_size):
+    trainset, valset = get_mnist_datasets()
     train_loader = DataLoader(dataset=trainset, batch_size=batch_size)
     val_loader = DataLoader(dataset=valset, batch_size=batch_size)
     return train_loader, val_loader

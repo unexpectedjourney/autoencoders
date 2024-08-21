@@ -3,7 +3,7 @@ import torch
 from tqdm import tqdm
 from torchvision import transforms
 
-from vae.dataset import get_cifar10_dataloaders
+from vae.dataset import get_cifar10_dataloaders, get_mnist_dataloaders
 from vae.model import VAE
 
 
@@ -83,11 +83,12 @@ def sample_images(model, epoch, device):
     z = torch.randn(16, 512)
     z = z.to(device)
     output = model.sample(z)
-    output = 0.5 * (output + 1) * 255
+    # output = 0.5 * (output + 1) * 255
+    output = (output - (-0.1307/0.3081)) / (1/0.3081) * 255
     output = output.to(torch.uint8).cpu()
     for i, img_tensor in enumerate(output):
         img = transforms.ToPILImage()(img_tensor)
-        img.save(f'checkpoints/vae-results-epoch-{epoch}-output-image-{i}.png')
+        img.save(f'samples/vae-results-epoch-{epoch}-output-image-{i}.png')
 
 
 def main():
@@ -99,8 +100,8 @@ def main():
         device = "cpu"
     print("Using device:", device)
 
-    train_loader, val_loader = get_cifar10_dataloaders(BATCH_SIZE)
-    model = VAE(3, 512).to(device)
+    train_loader, val_loader = get_mnist_dataloaders(BATCH_SIZE)
+    model = VAE(1, 512).to(device)
     params = list(model.parameters())
     optimizer = torch.optim.Adam(params, lr=LR)
 

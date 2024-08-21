@@ -60,7 +60,7 @@ class VAE(nn.Module):
         self.final_layer = nn.Sequential(
             nn.Conv2d(
                 hidden_dims[0],
-                out_channels=3,
+                out_channels=self.in_channels,
                 kernel_size=3,
                 stride=2,
                 padding=1
